@@ -4,8 +4,8 @@ import json
 import pandas as pd
 
 # 1. 設定你想追蹤的台美股清單
-WATCHLIST_US = ['AAPL', 'NVDA', 'MSFT']  # 美股代號
-WATCHLIST_TW = ['2330', '2454']         # 台股代號
+WATCHLIST_US = ['AAPL', 'NVDA', 'MSFT', 'TSLA', 'GOOGL']  # 美股代號 (可自行新增/刪除)
+WATCHLIST_TW = ['2330', '2454', '2317', '2382']          # 台股代號 (可自行新增/刪除)
 
 def get_us_financials(ticker_symbol):
     """取得美股季度財報數據"""
