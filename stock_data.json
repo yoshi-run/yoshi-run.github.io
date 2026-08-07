@@ -1,152 +1,188 @@
 {
-  "AAPL": {
-    "type": "US",
-    "unit": "百萬美元",
-    "financials": [
+  "_config": {
+    "watchlist": [
       {
-        "date": "2025-09-30",
-        "revenue": 102466.0,
-        "net_income": 27466.0,
-        "operating_cash_flow": 29728.0
+        "name": "AAPL (蘋果)",
+        "symbol": "AAPL",
+        "type": "US"
       },
       {
-        "date": "2025-12-31",
-        "revenue": 143756.0,
-        "net_income": 42097.0,
-        "operating_cash_flow": 53925.0
+        "name": "NVDA (輝達)",
+        "symbol": "NVDA",
+        "type": "US"
       },
       {
-        "date": "2026-03-31",
-        "revenue": 111184.0,
-        "net_income": 29578.0,
-        "operating_cash_flow": 28702.0
+        "name": "MSFT (微軟)",
+        "symbol": "MSFT",
+        "type": "US"
       },
       {
-        "date": "2026-06-30",
-        "revenue": 109417.0,
-        "net_income": 29789.0,
-        "operating_cash_flow": 34369.0
+        "name": "2330 (台積電)",
+        "symbol": "2330.TW",
+        "type": "TW"
+      },
+      {
+        "name": "2454 (聯發科)",
+        "symbol": "2454.TW",
+        "type": "TW"
       }
     ]
   },
-  "NVDA": {
-    "type": "US",
-    "unit": "百萬美元",
-    "financials": [
-      {
-        "date": "2025-07-31",
-        "revenue": 46743.0,
-        "net_income": 26422.0,
-        "operating_cash_flow": 15365.0
-      },
-      {
-        "date": "2025-10-31",
-        "revenue": 57006.0,
-        "net_income": 31910.0,
-        "operating_cash_flow": 23751.0
-      },
-      {
-        "date": "2026-01-31",
-        "revenue": 68127.0,
-        "net_income": 42960.0,
-        "operating_cash_flow": 36188.0
-      },
-      {
-        "date": "2026-04-30",
-        "revenue": 81615.0,
-        "net_income": 58321.0,
-        "operating_cash_flow": 50344.0
-      }
-    ]
-  },
-  "MSFT": {
-    "type": "US",
-    "unit": "百萬美元",
-    "financials": [
-      {
-        "date": "2025-09-30",
-        "revenue": 77673.0,
-        "net_income": 27747.0,
-        "operating_cash_flow": 45057.0
-      },
-      {
-        "date": "2025-12-31",
-        "revenue": 81273.0,
-        "net_income": 38458.0,
-        "operating_cash_flow": 35758.0
-      },
-      {
-        "date": "2026-03-31",
-        "revenue": 82886.0,
-        "net_income": 31778.0,
-        "operating_cash_flow": 46679.0
-      },
-      {
-        "date": "2026-06-30",
-        "revenue": 90007.0,
-        "net_income": 35766.0,
-        "operating_cash_flow": 55441.0
-      }
-    ]
-  },
-  "2330 (台積電)": {
-    "type": "TW",
-    "unit": "億新台幣",
-    "financials": [
-      {
-        "date": "2025-09-30",
-        "revenue": 9899.18,
-        "net_income": 4523.01,
-        "operating_cash_flow": 4268.29
-      },
-      {
-        "date": "2025-12-31",
-        "revenue": 10460.9,
-        "net_income": 4854.65,
-        "operating_cash_flow": 7255.09
-      },
-      {
-        "date": "2026-03-31",
-        "revenue": 11341.03,
-        "net_income": 5724.8,
-        "operating_cash_flow": 6989.76
-      },
-      {
-        "date": "2026-06-30",
-        "revenue": 12703.81,
-        "net_income": 7065.62,
-        "operating_cash_flow": 7833.65
-      }
-    ]
-  },
-  "2454 (聯發科)": {
-    "type": "TW",
-    "unit": "億新台幣",
-    "financials": [
-      {
-        "date": "2025-06-30",
-        "revenue": 1503.69,
-        "net_income": 278.48,
-        "operating_cash_flow": 456.69
-      },
-      {
-        "date": "2025-09-30",
-        "revenue": 1420.97,
-        "net_income": 252.21,
-        "operating_cash_flow": 391.81
-      },
-      {
-        "date": "2025-12-31",
-        "revenue": 1501.88,
-        "net_income": 229.25,
-        "operating_cash_flow": 645.2
-      },
-      {
-        "date": "2026-03-31",
-        "revenue": 1491.51,
-        "net_income": 241.54,
-        "operating_cash_flow": -176.57
-      }
-    ]
+  "stocks": {
+    "AAPL (蘋果)": {
+      "symbol": "AAPL",
+      "type": "US",
+      "unit": "百萬美元",
+      "financials": [
+        {
+          "date": "2025-09-30",
+          "revenue": 102466.0,
+          "net_income": 27466.0,
+          "operating_cash_flow": 29728.0
+        },
+        {
+          "date": "2025-12-31",
+          "revenue": 143756.0,
+          "net_income": 42097.0,
+          "operating_cash_flow": 53925.0
+        },
+        {
+          "date": "2026-03-31",
+          "revenue": 111184.0,
+          "net_income": 29578.0,
+          "operating_cash_flow": 28702.0
+        },
+        {
+          "date": "2026-06-30",
+          "revenue": 109417.0,
+          "net_income": 29789.0,
+          "operating_cash_flow": 34369.0
+        }
+      ]
+    },
+    "NVDA (輝達)": {
+      "symbol": "NVDA",
+      "type": "US",
+      "unit": "百萬美元",
+      "financials": [
+        {
+          "date": "2025-07-31",
+          "revenue": 46743.0,
+          "net_income": 26422.0,
+          "operating_cash_flow": 15365.0
+        },
+        {
+          "date": "2025-10-31",
+          "revenue": 57006.0,
+          "net_income": 31910.0,
+          "operating_cash_flow": 23751.0
+        },
+        {
+          "date": "2026-01-31",
+          "revenue": 68127.0,
+          "net_income": 42960.0,
+          "operating_cash_flow": 36188.0
+        },
+        {
+          "date": "2026-04-30",
+          "revenue": 81615.0,
+          "net_income": 58321.0,
+          "operating_cash_flow": 50344.0
+        }
+      ]
+    },
+    "MSFT (微軟)": {
+      "symbol": "MSFT",
+      "type": "US",
+      "unit": "百萬美元",
+      "financials": [
+        {
+          "date": "2025-09-30",
+          "revenue": 77673.0,
+          "net_income": 27747.0,
+          "operating_cash_flow": 45057.0
+        },
+        {
+          "date": "2025-12-31",
+          "revenue": 81273.0,
+          "net_income": 38458.0,
+          "operating_cash_flow": 35758.0
+        },
+        {
+          "date": "2026-03-31",
+          "revenue": 82886.0,
+          "net_income": 31778.0,
+          "operating_cash_flow": 46679.0
+        },
+        {
+          "date": "2026-06-30",
+          "revenue": 90007.0,
+          "net_income": 35766.0,
+          "operating_cash_flow": 55441.0
+        }
+      ]
+    },
+    "2330 (台積電)": {
+      "symbol": "2330.TW",
+      "type": "TW",
+      "unit": "億新台幣",
+      "financials": [
+        {
+          "date": "2025-09-30",
+          "revenue": 9899.18,
+          "net_income": 4523.01,
+          "operating_cash_flow": 4268.29
+        },
+        {
+          "date": "2025-12-31",
+          "revenue": 10460.9,
+          "net_income": 4854.65,
+          "operating_cash_flow": 7255.09
+        },
+        {
+          "date": "2026-03-31",
+          "revenue": 11341.03,
+          "net_income": 5724.8,
+          "operating_cash_flow": 6989.76
+        },
+        {
+          "date": "2026-06-30",
+          "revenue": 12703.81,
+          "net_income": 7065.62,
+          "operating_cash_flow": 7833.65
+        }
+      ]
+    },
+    "2454 (聯發科)": {
+      "symbol": "2454.TW",
+      "type": "TW",
+      "unit": "億新台幣",
+      "financials": [
+        {
+          "date": "2025-06-30",
+          "revenue": 1503.69,
+          "net_income": 278.48,
+          "operating_cash_flow": 456.69
+        },
+        {
+          "date": "2025-09-30",
+          "revenue": 1420.97,
+          "net_income": 252.21,
+          "operating_cash_flow": 391.81
+        },
+        {
+          "date": "2025-12-31",
+          "revenue": 1501.88,
+          "net_income": 229.25,
+          "operating_cash_flow": 645.2
+        },
+        {
+          "date": "2026-03-31",
+          "revenue": 1491.51,
+          "net_income": 241.54,
+          "operating_cash_flow": -176.57
+        }
+      ]
+    }
   }
 }
