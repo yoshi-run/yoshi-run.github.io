@@ -9,6 +9,8 @@ DEFAULT_STOCKS = [
     {"name": "AAPL (蘋果)", "symbol": "AAPL", "type": "US"},
     {"name": "NVDA (輝達)", "symbol": "NVDA", "type": "US"},
     {"name": "MSFT (微軟)", "symbol": "MSFT", "type": "US"},
+    {"name": "TSLA (特斯拉)", "symbol": "TSLA", "type": "US"},  # 👈 新增美股範例
+    {"name": "AMZN (亞馬遜)", "symbol": "AMZN", "type": "US"},  # 👈 新增美股範例
     {"name": "2330 (台積電)", "symbol": "2330.TW", "type": "TW"},
     {"name": "2454 (聯發科)", "symbol": "2454.TW", "type": "TW"},
 ]
