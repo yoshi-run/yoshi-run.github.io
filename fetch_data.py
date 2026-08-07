@@ -1,72 +1,73 @@
-import yfinance as yf
-import requests
 import json
 import pandas as pd
+import yfinance as yf
 
-# 1. 設定你想追蹤的台美股清單
-WATCHLIST_US = ['AAPL', 'NVDA', 'MSFT', 'TSLA', 'GOOGL']  # 美股代號 (可自行新增/刪除)
-WATCHLIST_TW = ['2330', '2454', '2317', '2382']          # 台股代號 (可自行新增/刪除)
+# 設定你想追蹤的台美股清單
+# 美股直接填寫代號，台股後面要加 .TW（例如 2330.TW, 2454.TW）
+WATCHLIST = {
+    'AAPL': {'type': 'US', 'symbol': 'AAPL'},
+    'NVDA': {'type': 'US', 'symbol': 'NVDA'},
+    'MSFT': {'type': 'US', 'symbol': 'MSFT'},
+    '2330 (台積電)': {'type': 'TW', 'symbol': '2330.TW'},
+    '2454 (聯發科)': {'type': 'TW', 'symbol': '2454.TW'},
+}
 
-def get_us_financials(ticker_symbol):
-    """取得美股季度財報數據"""
-    stock = yf.Ticker(ticker_symbol)
-    financials = stock.quarterly_financials
-    cashflow = stock.quarterly_cashflow
-    
-    data = []
-    if not financials.empty:
-        # 取最近 4 個季度
-        for date in financials.columns[:4]:
-            q_date = date.strftime('%Y-%m-%d')
-            rev = financials.loc['Total Revenue', date] if 'Total Revenue' in financials.index else 0
-            net_income = financials.loc['Net Income', date] if 'Net Income' in financials.index else 0
-            op_cash = cashflow.loc['Operating Cash Flow', date] if 'Operating Cash Flow' in cashflow.index else 0
-            
-            data.append({
-                "date": q_date,
-                "revenue": float(rev) / 1e6,       # 單位：百萬美元
-                "net_income": float(net_income) / 1e6,
-                "operating_cash_flow": float(op_cash) / 1e6
-            })
-    return data
 
-def get_tw_financials(stock_id):
-    """取得台股季度財報數據 (使用 FinMind API)"""
-    url = "https://api.finmindtrade.com/api/v4/data"
-    params = {
-        "dataset": "TaiwanStockFinancialStatements",
-        "stock_id": stock_id,
-        "start_date": "2023-01-01"
-    }
-    res = requests.get(url, params=params).json()
-    df = pd.DataFrame(res.get("data", []))
-    
-    if df.empty:
-        return []
+def get_stock_financials(display_name, info):
+  ticker_symbol = info['symbol']
+  is_tw = info['type'] == 'TW'
+  stock = yf.Ticker(ticker_symbol)
 
-    # 簡單進行資料透視與處理
-    pivoted = df.pivot(index='date', columns='type', values='value').fillna(0)
-    
-    result = []
-    for date, row in pivoted.tail(4).iterrows():
-        result.append({
-            "date": date,
-            "revenue": float(row.get('Revenue', 0)) / 1e8, # 單位：億台幣
-            "net_income": float(row.get('IncomeAfterTaxes', 0)) / 1e8,
-            "operating_cash_flow": float(row.get('CashFlowsFromOperatingActivities', 0)) / 1e8
-        })
-    return result
+  financials = stock.quarterly_financials
+  cashflow = stock.quarterly_cashflow
 
-# 2. 彙整資料並儲存為 stock_data.json
+  data = []
+  if not financials.empty:
+    # 取得最近 4 個季度 (預設由新到舊，反轉成由舊到新)
+    dates = list(financials.columns[:4])[::-1]
+
+    for date in dates:
+      q_date = date.strftime('%Y-%m-%d')
+      rev = (
+          financials.loc['Total Revenue', date]
+          if 'Total Revenue' in financials.index
+          else 0
+      )
+      net_inc = (
+          financials.loc['Net Income', date]
+          if 'Net Income' in financials.index
+          else 0
+      )
+      op_cash = (
+          cashflow.loc['Operating Cash Flow', date]
+          if 'Operating Cash Flow' in cashflow.index
+          else 0
+      )
+
+      # 台股除以 1億 (億台幣)，美股除以 100萬 (百萬美元)
+      divisor = 1e8 if is_tw else 1e6
+
+      data.append({
+          'date': q_date,
+          'revenue': round(float(rev) / divisor, 2),
+          'net_income': round(float(net_inc) / divisor, 2),
+          'operating_cash_flow': round(float(op_cash) / divisor, 2),
+      })
+  return data
+
+
 all_data = {}
-
-for symbol in WATCHLIST_US:
-    all_data[symbol] = {"type": "US", "financials": get_us_financials(symbol)}
-
-for symbol in WATCHLIST_TW:
-    all_data[symbol] = {"type": "TW", "financials": get_tw_financials(symbol)}
+for display_name, info in WATCHLIST.items():
+  print(f'正在抓取: {display_name} ({info["symbol"]})...')
+  financials = get_stock_financials(display_name, info)
+  if financials:
+    all_data[display_name] = {
+        'type': info['type'],
+        'unit': '億新台幣' if info['type'] == 'TW' else '百萬美元',
+        'financials': financials,
+    }
 
 with open('stock_data.json', 'w', encoding='utf-8') as f:
-    json.dump(all_data, f, ensure_ascii=False, indent=2)
+  json.dump(all_data, f, ensure_ascii=False, indent=2)
 
-print("財報數據更新完成！已寫入 stock_data.json")
+print('財報數據更新完成！已寫入 stock_data.json')
