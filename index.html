@@ -6,165 +6,305 @@
   <title>台美股季度財報追蹤儀表板</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    * { box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #f4f6f9;
+      background-color: #f1f5f9;
       margin: 0;
-      padding: 20px;
+      padding: 12px;
+      color: #334155;
     }
     .container {
-      max-width: 900px;
+      max-width: 800px;
       margin: 0 auto;
+    }
+    .header-card, .metric-card {
       background: white;
-      padding: 30px;
+      padding: 18px;
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 16px;
     }
     h1 {
-      margin-top: 0;
-      color: #1e293b;
-      font-size: 24px;
-    }
-    .controls {
-      margin-bottom: 20px;
+      font-size: 20px;
+      margin: 0 0 16px 0;
+      color: #0f172a;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
-    select {
-      padding: 8px 16px;
-      font-size: 16px;
-      border-radius: 6px;
+    .select-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    select, input, button {
+      padding: 10px 12px;
+      font-size: 15px;
+      border-radius: 8px;
       border: 1px solid #cbd5e1;
       outline: none;
-      background-color: #fff;
-      cursor: pointer;
+      width: 100%;
     }
-    .chart-container {
-      position: relative;
-      height: 450px;
-      margin-top: 20px;
+    select {
+      background-color: #f8fafc;
+      font-weight: 600;
     }
-    .unit-info {
-      font-size: 14px;
+    .add-stock-box {
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px dashed #cbd5e1;
+      margin-top: 10px;
+    }
+    .add-stock-title {
+      font-size: 13px;
+      font-weight: bold;
       color: #64748b;
-      margin-left: auto;
+      margin-bottom: 8px;
+    }
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-add {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+      width: auto;
+    }
+    .btn-del {
+      background-color: #ef4444;
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+      font-size: 13px;
+      padding: 6px 12px;
+    }
+    .unit-badge {
+      display: inline-block;
+      font-size: 12px;
+      background: #e2e8f0;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-top: 8px;
+      color: #475569;
+    }
+    .metric-card h2 {
+      font-size: 16px;
+      margin: 0 0 12px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .chart-box {
+      position: relative;
+      height: 220px;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>📊 台美股季度財報追蹤儀表板</h1>
   
-  <div class="controls">
-    <label for="stockSelect"><strong>選擇股票：</strong></label>
-    <select id="stockSelect" onchange="updateChart()"></select>
-    <span id="unitText" class="unit-info"></span>
+  <!-- 頂部控制面板 -->
+  <div class="header-card">
+    <h1>📈 財報追蹤儀表板</h1>
+    
+    <div class="select-group">
+      <label for="stockSelect" style="font-size:14px; font-weight:bold;">選擇查看股票：</label>
+      <select id="stockSelect" onchange="updateCharts()"></select>
+    </div>
+    
+    <div id="unitText" class="unit-badge">單位：--</div>
+
+    <!-- 自訂新增股票專區 -->
+    <div class="add-stock-box">
+      <div class="add-stock-title">➕ 自訂新增追蹤股票 (美股或台股代碼)</div>
+      <div class="input-row">
+        <input type="text" id="newSymbol" placeholder="例如: TSLA 或 2317" />
+        <button class="btn-add" onclick="addNewStock()">加入</button>
+      </div>
+      <button class="btn-del" onclick="deleteCurrentStock()">🗑️ 刪除當前選擇的股票</button>
+    </div>
   </div>
 
-  <div class="chart-container">
-    <canvas id="financialChart"></canvas>
+  <!-- 指標 1：營業收入 Container -->
+  <div class="metric-card">
+    <h2>🔷 營業收入 (Revenue)</h2>
+    <div class="chart-box">
+      <canvas id="revenueChart"></canvas>
+    </div>
   </div>
+
+  <!-- 指標 2：稅後淨利 Container -->
+  <div class="metric-card">
+    <h2>🟢 稅後淨利 (Net Income)</h2>
+    <div class="chart-box">
+      <canvas id="netIncomeChart"></canvas>
+    </div>
+  </div>
+
+  <!-- 指標 3：營業現金流 Container -->
+  <div class="metric-card">
+    <h2>📙 營業現金流 (Operating Cash Flow)</h2>
+    <div class="chart-box">
+      <canvas id="cashFlowChart"></canvas>
+    </div>
+  </div>
+
 </div>
 
 <script>
-  let stockData = {};
-  let chartInstance = null;
-
-  // 定義四季度的固定顏色 (由舊到新)
-  const quarterColors = [
-    { bg: 'rgba(148, 163, 184, 0.8)', border: '#64748b' }, // 舊 Q1 - 灰色
-    { bg: 'rgba(59, 130, 246, 0.8)', border: '#2563eb' },  // Q2 - 藍色
-    { bg: 'rgba(16, 185, 129, 0.8)', border: '#059669' },  // Q3 - 綠色
-    { bg: 'rgba(245, 158, 11, 0.8)', border: '#d97706' }   // 最新 Q4 - 橘色
-  ];
+  let fullData = { _config: { watchlist: [] }, stocks: {} };
+  let charts = {};
 
   async function loadData() {
     try {
-      const response = await fetch('stock_data.json?t=' + new Date().getTime());
-      stockData = await response.json();
-      
-      const select = document.getElementById('stockSelect');
-      select.innerHTML = '';
-      
-      for (const stockKey in stockData) {
-        const option = document.createElement('option');
-        option.value = stockKey;
-        option.textContent = stockKey;
-        select.appendChild(option);
-      }
-      
-      updateChart();
-    } catch (error) {
-      console.error('無法讀取 stock_data.json:', error);
+      const res = await fetch('stock_data.json?t=' + new Date().getTime());
+      fullData = await res.json();
+      renderDropdown();
+      updateCharts();
+    } catch (e) {
+      console.error("載入失敗:", e);
     }
   }
 
-  function updateChart() {
-    const selectedStock = document.getElementById('stockSelect').value;
-    if (!selectedStock || !stockData[selectedStock]) return;
+  function renderDropdown() {
+    const select = document.getElementById('stockSelect');
+    select.innerHTML = '';
+    
+    const stocks = fullData.stocks || {};
+    for (const key in stocks) {
+      const opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = key;
+      select.appendChild(opt);
+    }
+  }
 
-    const data = stockData[selectedStock];
-    const financials = data.financials;
-
-    document.getElementById('unitText').textContent = `單位：${data.unit}`;
-
-    // X 軸類別改為三項指標
-    const labels = ['營業收入', '稅後淨利', '營業現金流'];
-
-    // 將數據結構轉置：每一季變為一個數據集 (Dataset)
-    const datasets = financials.map((q, index) => {
-      const color = quarterColors[index % quarterColors.length];
-      return {
-        label: q.date,
-        data: [q.revenue, q.net_income, q.operating_cash_flow],
-        backgroundColor: color.bg,
-        borderColor: color.border,
-        borderWidth: 1
-      };
-    });
-
-    const ctx = document.getElementById('financialChart').getContext('2d');
-
-    if (chartInstance) {
-      chartInstance.destroy();
+  function createSingleChart(canvasId, title, labels, dataPoints, colorBg, colorBorder, unit) {
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    
+    if (charts[canvasId]) {
+      charts[canvasId].destroy();
     }
 
-    chartInstance = new Chart(ctx, {
+    charts[canvasId] = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: labels,
-        datasets: datasets
+        datasets: [{
+          label: title,
+          data: dataPoints,
+          backgroundColor: colorBg,
+          borderColor: colorBorder,
+          borderWidth: 1.5,
+          borderRadius: 6
+        }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          title: {
-            display: true,
-            text: `${selectedStock} 近 4 季各項財務指標對比`,
-            font: { size: 16 }
-          },
+          legend: { display: false },
           tooltip: {
             callbacks: {
-              label: function(context) {
-                return `${context.dataset.label}: ${context.raw.toLocaleString()} ${data.unit}`;
-              }
+              label: (ctx) => `${ctx.raw.toLocaleString()} ${unit}`
             }
           }
         },
         scales: {
           y: {
             beginAtZero: false,
-            title: {
-              display: true,
-              text: data.unit
-            }
+            grid: { color: '#f1f5f9' }
+          },
+          x: {
+            grid: { display: false }
           }
         }
       }
     });
+  }
+
+  function updateCharts() {
+    const selectedKey = document.getElementById('stockSelect').value;
+    if (!selectedKey || !fullData.stocks[selectedKey]) return;
+
+    const stock = fullData.stocks[selectedKey];
+    const financials = stock.financials || [];
+
+    document.getElementById('unitText').textContent = `單位：${stock.unit}`;
+
+    const dates = financials.map(f => f.date);
+    const revenues = financials.map(f => f.revenue);
+    const netIncomes = financials.map(f => f.net_income);
+    const cashFlows = financials.map(f => f.operating_cash_flow);
+
+    // 1. 營業收入 - 統一藍色
+    createSingleChart('revenueChart', '營業收入', dates, revenues, 'rgba(37, 99, 235, 0.75)', '#1d4ed8', stock.unit);
+    
+    // 2. 稅後淨利 - 統一綠色
+    createSingleChart('netIncomeChart', '稅後淨利', dates, netIncomes, 'rgba(16, 185, 129, 0.75)', '#047857', stock.unit);
+    
+    // 3. 營業現金流 - 統一橘色
+    createSingleChart('cashFlowChart', '營業現金流', dates, cashFlows, 'rgba(245, 158, 11, 0.75)', '#b45309', stock.unit);
+  }
+
+  // 前端新增股票功能
+  function addNewStock() {
+    const input = document.getElementById('newSymbol').value.trim().toUpperCase();
+    if (!input) return alert('請輸入股票代碼！');
+
+    let isTw = /^\d{4}$/.test(input);
+    let symbol = isTw ? `${input}.TW` : input;
+    let name = isTw ? `${input} (台股)` : `${input} (美股)`;
+    let type = isTw ? 'TW' : 'US';
+
+    // 檢查是否已存在
+    let watchlist = fullData._config.watchlist || [];
+    if (watchlist.some(s => s.symbol === symbol)) {
+      return alert('這支股票已經在追蹤清單中囉！');
+    }
+
+    watchlist.push({ name: name, symbol: symbol, type: type });
+    fullData._config.watchlist = watchlist;
+    
+    // 預先建一個空殼
+    fullData.stocks[name] = {
+      symbol: symbol,
+      type: type,
+      unit: isTw ? '億新台幣' : '百萬美元',
+      financials: []
+    };
+
+    renderDropdown();
+    document.getElementById('stockSelect').value = name;
+    document.getElementById('newSymbol').value = '';
+    
+    alert(`已新增 ${name}！請在 GitHub 上執行一次 Actions，或是等待排程自動抓取數據。`);
+  }
+
+  // 前端刪除股票功能
+  function deleteCurrentStock() {
+    const selectedKey = document.getElementById('stockSelect').value;
+    if (!selectedKey) return;
+
+    if (confirm(`確定要刪除 ${selectedKey} 嗎？`)) {
+      let symbol = fullData.stocks[selectedKey].symbol;
+      fullData._config.watchlist = fullData._config.watchlist.filter(s => s.symbol !== symbol);
+      delete fullData.stocks[selectedKey];
+      
+      renderDropdown();
+      updateCharts();
+      alert('已刪除！請記得觸發一次 Actions 更新數據。');
+    }
   }
 
   loadData();
