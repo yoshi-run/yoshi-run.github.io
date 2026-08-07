@@ -167,7 +167,7 @@
 
   async function loadData() {
     try {
-      const res = await fetch('stock_data.json?t=' + new Date().getTime());
+      const res = await fetch('stock_data.json', { cache: 'no-store' });
       fullData = await res.json();
       renderDropdown();
       updateCharts();
