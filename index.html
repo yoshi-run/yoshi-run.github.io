@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>台美股季度財報追蹤儀表板</title>
+  <title>台美股財報追蹤儀表板</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     * { box-sizing: border-box; }
@@ -29,9 +29,6 @@
       font-size: 20px;
       margin: 0 0 16px 0;
       color: #0f172a;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
     .select-group {
       display: flex;
@@ -39,53 +36,15 @@
       gap: 8px;
       margin-bottom: 12px;
     }
-    select, input, button {
+    select {
       padding: 10px 12px;
       font-size: 15px;
       border-radius: 8px;
       border: 1px solid #cbd5e1;
       outline: none;
       width: 100%;
-    }
-    select {
       background-color: #f8fafc;
       font-weight: 600;
-    }
-    .add-stock-box {
-      background: #f8fafc;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px dashed #cbd5e1;
-      margin-top: 10px;
-    }
-    .add-stock-title {
-      font-size: 13px;
-      font-weight: bold;
-      color: #64748b;
-      margin-bottom: 8px;
-    }
-    .input-row {
-      display: flex;
-      gap: 8px;
-    }
-    .btn-add {
-      background-color: #2563eb;
-      color: white;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-      white-space: nowrap;
-      width: auto;
-    }
-    .btn-del {
-      background-color: #ef4444;
-      color: white;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 8px;
-      font-size: 13px;
-      padding: 6px 12px;
     }
     .unit-badge {
       display: inline-block;
@@ -93,19 +52,15 @@
       background: #e2e8f0;
       padding: 4px 8px;
       border-radius: 4px;
-      margin-top: 8px;
       color: #475569;
     }
     .metric-card h2 {
       font-size: 16px;
       margin: 0 0 12px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
     .chart-box {
       position: relative;
-      height: 220px;
+      height: 240px;
     }
   </style>
 </head>
@@ -113,7 +68,7 @@
 
 <div class="container">
   
-  <!-- 頂部控制面板 -->
+  <!-- 控制面板 -->
   <div class="header-card">
     <h1>📈 財報追蹤儀表板</h1>
     
@@ -123,21 +78,11 @@
     </div>
     
     <div id="unitText" class="unit-badge">單位：--</div>
-
-    <!-- 自訂新增股票專區 -->
-    <div class="add-stock-box">
-      <div class="add-stock-title">➕ 自訂新增追蹤股票 (美股或台股代碼)</div>
-      <div class="input-row">
-        <input type="text" id="newSymbol" placeholder="例如: TSLA 或 2317" />
-        <button class="btn-add" onclick="addNewStock()">加入</button>
-      </div>
-      <button class="btn-del" onclick="deleteCurrentStock()">🗑️ 刪除當前選擇的股票</button>
-    </div>
   </div>
 
-<!-- 指標 1：營業收入 Container -->
+  <!-- 指標 1：營業收入 Container -->
   <div class="metric-card">
-    <h2>🔷 近 12 季營業收入 (Revenue)</h2>
+    <h2>🔷 營業收入 (Revenue)</h2>
     <div class="chart-box">
       <canvas id="revenueChart"></canvas>
     </div>
@@ -145,7 +90,7 @@
 
   <!-- 指標 2：稅後淨利 Container -->
   <div class="metric-card">
-    <h2>🟢 近 12 季稅後淨利 (Net Income)</h2>
+    <h2>🟢 稅後淨利 (Net Income)</h2>
     <div class="chart-box">
       <canvas id="netIncomeChart"></canvas>
     </div>
@@ -153,7 +98,7 @@
 
   <!-- 指標 3：營業現金流 Container -->
   <div class="metric-card">
-    <h2>📙 近 12 季營業現金流 (Operating Cash Flow)</h2>
+    <h2>📙 營業現金流 (Operating Cash Flow)</h2>
     <div class="chart-box">
       <canvas id="cashFlowChart"></canvas>
     </div>
@@ -162,17 +107,19 @@
 </div>
 
 <script>
-  let fullData = { _config: { watchlist: [] }, stocks: {} };
+  let fullData = {};
   let charts = {};
 
   async function loadData() {
     try {
-      const res = await fetch('stock_data.json', { cache: 'no-store' });
+      // 加時間戳記強制避免快取
+      const res = await fetch('stock_data.json?t=' + new Date().getTime());
       fullData = await res.json();
       renderDropdown();
       updateCharts();
     } catch (e) {
-      console.error("載入失敗:", e);
+      console.error("載入 JSON 失敗:", e);
+      alert("無法載入資料，請確認 stock_data.json 格式是否正確");
     }
   }
 
@@ -180,8 +127,11 @@
     const select = document.getElementById('stockSelect');
     select.innerHTML = '';
     
-    const stocks = fullData.stocks || {};
+    // 相容舊版與新版 JSON 結構
+    const stocks = fullData.stocks || fullData;
+    
     for (const key in stocks) {
+      if (key === '_config') continue; // 排除設定檔
       const opt = document.createElement('option');
       opt.value = key;
       opt.textContent = key;
@@ -216,7 +166,7 @@
           legend: { display: false },
           tooltip: {
             callbacks: {
-              label: (ctx) => `${ctx.raw.toLocaleString()} ${unit}`
+              label: (ctx) => `${ctx.raw !== null ? ctx.raw.toLocaleString() : '無資料'} ${unit}`
             }
           }
         },
@@ -235,76 +185,26 @@
 
   function updateCharts() {
     const selectedKey = document.getElementById('stockSelect').value;
-    if (!selectedKey || !fullData.stocks[selectedKey]) return;
+    if (!selectedKey) return;
 
-    const stock = fullData.stocks[selectedKey];
+    // 相容新舊結構
+    const stocks = fullData.stocks || fullData;
+    const stock = stocks[selectedKey];
+    if (!stock) return;
+
     const financials = stock.financials || [];
 
-    document.getElementById('unitText').textContent = `單位：${stock.unit}`;
+    document.getElementById('unitText').textContent = `單位：${stock.unit || ''}`;
 
     const dates = financials.map(f => f.date);
     const revenues = financials.map(f => f.revenue);
     const netIncomes = financials.map(f => f.net_income);
     const cashFlows = financials.map(f => f.operating_cash_flow);
 
-    // 1. 營業收入 - 統一藍色
+    // 渲染三張柱狀圖
     createSingleChart('revenueChart', '營業收入', dates, revenues, 'rgba(37, 99, 235, 0.75)', '#1d4ed8', stock.unit);
-    
-    // 2. 稅後淨利 - 統一綠色
     createSingleChart('netIncomeChart', '稅後淨利', dates, netIncomes, 'rgba(16, 185, 129, 0.75)', '#047857', stock.unit);
-    
-    // 3. 營業現金流 - 統一橘色
     createSingleChart('cashFlowChart', '營業現金流', dates, cashFlows, 'rgba(245, 158, 11, 0.75)', '#b45309', stock.unit);
-  }
-
-  // 前端新增股票功能
-  function addNewStock() {
-    const input = document.getElementById('newSymbol').value.trim().toUpperCase();
-    if (!input) return alert('請輸入股票代碼！');
-
-    let isTw = /^\d{4}$/.test(input);
-    let symbol = isTw ? `${input}.TW` : input;
-    let name = isTw ? `${input} (台股)` : `${input} (美股)`;
-    let type = isTw ? 'TW' : 'US';
-
-    // 檢查是否已存在
-    let watchlist = fullData._config.watchlist || [];
-    if (watchlist.some(s => s.symbol === symbol)) {
-      return alert('這支股票已經在追蹤清單中囉！');
-    }
-
-    watchlist.push({ name: name, symbol: symbol, type: type });
-    fullData._config.watchlist = watchlist;
-    
-    // 預先建一個空殼
-    fullData.stocks[name] = {
-      symbol: symbol,
-      type: type,
-      unit: isTw ? '億新台幣' : '百萬美元',
-      financials: []
-    };
-
-    renderDropdown();
-    document.getElementById('stockSelect').value = name;
-    document.getElementById('newSymbol').value = '';
-    
-    alert(`已新增 ${name}！請在 GitHub 上執行一次 Actions，或是等待排程自動抓取數據。`);
-  }
-
-  // 前端刪除股票功能
-  function deleteCurrentStock() {
-    const selectedKey = document.getElementById('stockSelect').value;
-    if (!selectedKey) return;
-
-    if (confirm(`確定要刪除 ${selectedKey} 嗎？`)) {
-      let symbol = fullData.stocks[selectedKey].symbol;
-      fullData._config.watchlist = fullData._config.watchlist.filter(s => s.symbol !== symbol);
-      delete fullData.stocks[selectedKey];
-      
-      renderDropdown();
-      updateCharts();
-      alert('已刪除！請記得觸發一次 Actions 更新數據。');
-    }
   }
 
   loadData();
