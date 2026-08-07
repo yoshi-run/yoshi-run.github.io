@@ -2,70 +2,173 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>台美股季度財報追蹤儀表板</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
-    .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
-    select { padding: 8px; font-size: 16px; margin-bottom: 20px; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    h1 {
+      margin-top: 0;
+      color: #1e293b;
+      font-size: 24px;
+    }
+    .controls {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    select {
+      padding: 8px 16px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      outline: none;
+      background-color: #fff;
+      cursor: pointer;
+    }
+    .chart-container {
+      position: relative;
+      height: 450px;
+      margin-top: 20px;
+    }
+    .unit-info {
+      font-size: 14px;
+      color: #64748b;
+      margin-left: auto;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>📈 台美股季度財報追蹤儀表板</h2>
-    <label for="stockSelect">選擇股票：</label>
+
+<div class="container">
+  <h1>📊 台美股季度財報追蹤儀表板</h1>
+  
+  <div class="controls">
+    <label for="stockSelect"><strong>選擇股票：</strong></label>
     <select id="stockSelect" onchange="updateChart()"></select>
-    
-    <canvas id="financialChart" width="400" height="200"></canvas>
+    <span id="unitText" class="unit-info"></span>
   </div>
 
-  <script>
-    let stockData = {};
-    let chartInstance = null;
+  <div class="chart-container">
+    <canvas id="financialChart"></canvas>
+  </div>
+</div>
 
-    // 讀取產出的 JSON 數據
-    fetch('stock_data.json')
-      .then(res => res.json())
-      .then(data => {
-        stockData = data;
-        const select = document.getElementById('stockSelect');
-        Object.keys(data).forEach(symbol => {
-          let opt = document.createElement('option');
-          opt.value = symbol;
-          opt.innerHTML = symbol + ` (${data[symbol].type})`;
-          select.appendChild(opt);
-        });
-        updateChart();
-      });
+<script>
+  let stockData = {};
+  let chartInstance = null;
 
-    function updateChart() {
-      const symbol = document.getElementById('stockSelect').value;
-      const financials = stockData[symbol].financials.reverse(); // 依照時間正序
+  // 定義四季度的固定顏色 (由舊到新)
+  const quarterColors = [
+    { bg: 'rgba(148, 163, 184, 0.8)', border: '#64748b' }, // 舊 Q1 - 灰色
+    { bg: 'rgba(59, 130, 246, 0.8)', border: '#2563eb' },  // Q2 - 藍色
+    { bg: 'rgba(16, 185, 129, 0.8)', border: '#059669' },  // Q3 - 綠色
+    { bg: 'rgba(245, 158, 11, 0.8)', border: '#d97706' }   // 最新 Q4 - 橘色
+  ];
+
+  async function loadData() {
+    try {
+      const response = await fetch('stock_data.json?t=' + new Date().getTime());
+      stockData = await response.json();
       
-      const labels = financials.map(item => item.date);
-      const revenue = financials.map(item => item.revenue);
-      const netIncome = financials.map(item => item.net_income);
-      const cashFlow = financials.map(item => item.operating_cash_flow);
-
-      if (chartInstance) chartInstance.destroy();
-
-      const ctx = document.getElementById('financialChart').getContext('2d');
-      chartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [
-            { label: '營業收入', data: revenue, backgroundColor: 'rgba(54, 162, 235, 0.6)' },
-            { label: '稅後淨利', data: netIncome, backgroundColor: 'rgba(75, 192, 192, 0.6)' },
-            { label: '營業現金流', data: cashFlow, backgroundColor: 'rgba(255, 159, 64, 0.6)' }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: { title: { display: true, text: `${symbol} 近 4 季重要財務指標` } }
-        }
-      });
+      const select = document.getElementById('stockSelect');
+      select.innerHTML = '';
+      
+      for (const stockKey in stockData) {
+        const option = document.createElement('option');
+        option.value = stockKey;
+        option.textContent = stockKey;
+        select.appendChild(option);
+      }
+      
+      updateChart();
+    } catch (error) {
+      console.error('無法讀取 stock_data.json:', error);
     }
-  </script>
+  }
+
+  function updateChart() {
+    const selectedStock = document.getElementById('stockSelect').value;
+    if (!selectedStock || !stockData[selectedStock]) return;
+
+    const data = stockData[selectedStock];
+    const financials = data.financials;
+
+    document.getElementById('unitText').textContent = `單位：${data.unit}`;
+
+    // X 軸類別改為三項指標
+    const labels = ['營業收入', '稅後淨利', '營業現金流'];
+
+    // 將數據結構轉置：每一季變為一個數據集 (Dataset)
+    const datasets = financials.map((q, index) => {
+      const color = quarterColors[index % quarterColors.length];
+      return {
+        label: q.date,
+        data: [q.revenue, q.net_income, q.operating_cash_flow],
+        backgroundColor: color.bg,
+        borderColor: color.border,
+        borderWidth: 1
+      };
+    });
+
+    const ctx = document.getElementById('financialChart').getContext('2d');
+
+    if (chartInstance) {
+      chartInstance.destroy();
+    }
+
+    chartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: datasets
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          title: {
+            display: true,
+            text: `${selectedStock} 近 4 季各項財務指標對比`,
+            font: { size: 16 }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `${context.dataset.label}: ${context.raw.toLocaleString()} ${data.unit}`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            title: {
+              display: true,
+              text: data.unit
+            }
+          }
+        }
+      }
+    });
+  }
+
+  loadData();
+</script>
+
 </body>
 </html>
