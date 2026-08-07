@@ -32,12 +32,11 @@ def fetch_financials(symbol, is_tw):
   financials = pd.DataFrame()
   cashflow = pd.DataFrame()
 
-  # 嘗試取得季度資料
+  # 使用最穩定的 quarterly_financials / quarterly_cashflow
   for attempt in range(3):
     try:
-      # 使用 quarterly 相關 API 抓取更長歷史
-      financials = stock.get_quarterly_financials()
-      cashflow = stock.get_quarterly_cashflow()
+      financials = stock.quarterly_financials
+      cashflow = stock.quarterly_cashflow
       if not financials.empty:
         break
     except Exception:
@@ -47,8 +46,8 @@ def fetch_financials(symbol, is_tw):
     print(f"⚠️ 無法取得 {symbol} 的財報數據")
     return []
 
-  # 取最多近 12 個季度 (從舊到新排列)
-  cols = list(financials.columns[:12])[::-1]
+  # 取得可用的季度數據 (舊到新)
+  cols = list(financials.columns)[::-1]
   data = []
 
   for date in cols:
@@ -67,6 +66,8 @@ def fetch_financials(symbol, is_tw):
     ]
 
     def get_val(df, keys, col):
+      if df.empty:
+        return 0.0
       for k in keys:
         if k in df.index:
           val = df.loc[k, col]
@@ -103,7 +104,7 @@ def main():
     name = item["name"]
     is_tw = item["type"] == "TW"
 
-    print(f"🚀 正在抓取近 12 季數據: {name} ({symbol})...")
+    print(f"🚀 正在抓取財報數據: {name} ({symbol})...")
     financials = fetch_financials(symbol, is_tw)
 
     output_data["stocks"][name] = {
@@ -116,7 +117,7 @@ def main():
   with open("stock_data.json", "w", encoding="utf-8") as f:
     json.dump(output_data, f, ensure_ascii=False, indent=2)
 
-  print("✅ 近 12 季財報數據更新完成！已寫入 stock_data.json")
+  print("✅ 財報數據更新完成！已寫入 stock_data.json")
 
 
 if __name__ == "__main__":
