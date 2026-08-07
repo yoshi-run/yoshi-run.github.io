@@ -4,6 +4,7 @@ import time
 import pandas as pd
 import yfinance as yf
 
+# 預設追蹤清單
 DEFAULT_STOCKS = [
     {"name": "AAPL (蘋果)", "symbol": "AAPL", "type": "US"},
     {"name": "NVDA (輝達)", "symbol": "NVDA", "type": "US"},
@@ -31,10 +32,12 @@ def fetch_financials(symbol, is_tw):
   financials = pd.DataFrame()
   cashflow = pd.DataFrame()
 
+  # 嘗試取得季度資料
   for attempt in range(3):
     try:
-      financials = stock.quarterly_financials
-      cashflow = stock.quarterly_cashflow
+      # 使用 quarterly 相關 API 抓取更長歷史
+      financials = stock.get_quarterly_financials()
+      cashflow = stock.get_quarterly_cashflow()
       if not financials.empty:
         break
     except Exception:
@@ -44,12 +47,12 @@ def fetch_financials(symbol, is_tw):
     print(f"⚠️ 無法取得 {symbol} 的財報數據")
     return []
 
-  # 改為取得最近 8 個季度 (從舊到新排列)
-  cols = list(financials.columns[:8])[::-1]
+  # 取最多近 12 個季度 (從舊到新排列)
+  cols = list(financials.columns[:12])[::-1]
   data = []
 
   for date in cols:
-    q_date = date.strftime("%Y-%m")  # 只顯示 年-月 (如 2024-12)
+    q_date = date.strftime("%Y-%m")
 
     rev_keys = ["Total Revenue", "Revenue", "Operating Revenue"]
     net_keys = [
@@ -75,6 +78,7 @@ def fetch_financials(symbol, is_tw):
     net_inc = get_val(financials, net_keys, date)
     op_cash = get_val(cashflow, cash_keys, date)
 
+    # 單位轉換：台股除以 1億，美股除以 100萬
     divisor = 1e8 if is_tw else 1e6
 
     data.append({
@@ -99,7 +103,7 @@ def main():
     name = item["name"]
     is_tw = item["type"] == "TW"
 
-    print(f"🚀 正在抓取近 8 季數據: {name} ({symbol})...")
+    print(f"🚀 正在抓取近 12 季數據: {name} ({symbol})...")
     financials = fetch_financials(symbol, is_tw)
 
     output_data["stocks"][name] = {
@@ -112,7 +116,7 @@ def main():
   with open("stock_data.json", "w", encoding="utf-8") as f:
     json.dump(output_data, f, ensure_ascii=False, indent=2)
 
-  print("✅ 近 8 季財報數據更新完成！已寫入 stock_data.json")
+  print("✅ 近 12 季財報數據更新完成！已寫入 stock_data.json")
 
 
 if __name__ == "__main__":
