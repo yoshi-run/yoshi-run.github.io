@@ -4,7 +4,6 @@ import time
 import pandas as pd
 import yfinance as yf
 
-# 預設追蹤清單（若 stock_data.json 已有清單則優先讀取，支援網頁動態新增）
 DEFAULT_STOCKS = [
     {"name": "AAPL (蘋果)", "symbol": "AAPL", "type": "US"},
     {"name": "NVDA (輝達)", "symbol": "NVDA", "type": "US"},
@@ -15,7 +14,6 @@ DEFAULT_STOCKS = [
 
 
 def load_stock_list():
-  """從現有的 stock_data.json 讀取股票清單，若不存在則用預設值"""
   if os.path.exists("stock_data.json"):
     try:
       with open("stock_data.json", "r", encoding="utf-8") as f:
@@ -28,12 +26,11 @@ def load_stock_list():
 
 
 def fetch_financials(symbol, is_tw):
-  """抓取個別股票財報數據（含重試機制）"""
   stock = yf.Ticker(symbol)
 
-  # 重試機制
   financials = pd.DataFrame()
   cashflow = pd.DataFrame()
+
   for attempt in range(3):
     try:
       financials = stock.quarterly_financials
@@ -47,14 +44,13 @@ def fetch_financials(symbol, is_tw):
     print(f"⚠️ 無法取得 {symbol} 的財報數據")
     return []
 
-  # 取得最近 4 個季度 (反轉為舊到新)
-  cols = list(financials.columns[:4])[::-1]
+  # 改為取得最近 8 個季度 (從舊到新排列)
+  cols = list(financials.columns[:8])[::-1]
   data = []
 
   for date in cols:
-    q_date = date.strftime("%Y-%m-%d")
+    q_date = date.strftime("%Y-%m")  # 只顯示 年-月 (如 2024-12)
 
-    # 嘗試多種可能性欄位名稱 (以防 Yahoo 欄位改名)
     rev_keys = ["Total Revenue", "Revenue", "Operating Revenue"]
     net_keys = [
         "Net Income",
@@ -79,7 +75,6 @@ def fetch_financials(symbol, is_tw):
     net_inc = get_val(financials, net_keys, date)
     op_cash = get_val(cashflow, cash_keys, date)
 
-    # 單位轉換：台股除以 1億 (億台幣)，美股除以 100萬 (百萬美元)
     divisor = 1e8 if is_tw else 1e6
 
     data.append({
@@ -104,7 +99,7 @@ def main():
     name = item["name"]
     is_tw = item["type"] == "TW"
 
-    print(f"🚀 正在抓取: {name} ({symbol})...")
+    print(f"🚀 正在抓取近 8 季數據: {name} ({symbol})...")
     financials = fetch_financials(symbol, is_tw)
 
     output_data["stocks"][name] = {
@@ -117,7 +112,7 @@ def main():
   with open("stock_data.json", "w", encoding="utf-8") as f:
     json.dump(output_data, f, ensure_ascii=False, indent=2)
 
-  print("✅ 所有財報數據更新完成！已寫入 stock_data.json")
+  print("✅ 近 8 季財報數據更新完成！已寫入 stock_data.json")
 
 
 if __name__ == "__main__":
