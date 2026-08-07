@@ -3,17 +3,161 @@
     "type": "US",
     "financials": [
       {
-        "date": "2024-03-31",
-        "revenue": 90753,
-        "net_income": 23636,
-        "operating_cash_flow": 22700
+        "date": "2026-06-30",
+        "revenue": 109417.0,
+        "net_income": 29789.0,
+        "operating_cash_flow": 34369.0
       },
       {
-        "date": "2024-06-30",
-        "revenue": 85777,
-        "net_income": 21448,
-        "operating_cash_flow": 28900
+        "date": "2026-03-31",
+        "revenue": 111184.0,
+        "net_income": 29578.0,
+        "operating_cash_flow": 28702.0
+      },
+      {
+        "date": "2025-12-31",
+        "revenue": 143756.0,
+        "net_income": 42097.0,
+        "operating_cash_flow": 53925.0
+      },
+      {
+        "date": "2025-09-30",
+        "revenue": 102466.0,
+        "net_income": 27466.0,
+        "operating_cash_flow": 29728.0
       }
     ]
+  },
+  "NVDA": {
+    "type": "US",
+    "financials": [
+      {
+        "date": "2026-04-30",
+        "revenue": 81615.0,
+        "net_income": 58321.0,
+        "operating_cash_flow": 50344.0
+      },
+      {
+        "date": "2026-01-31",
+        "revenue": 68127.0,
+        "net_income": 42960.0,
+        "operating_cash_flow": 36188.0
+      },
+      {
+        "date": "2025-10-31",
+        "revenue": 57006.0,
+        "net_income": 31910.0,
+        "operating_cash_flow": 23751.0
+      },
+      {
+        "date": "2025-07-31",
+        "revenue": 46743.0,
+        "net_income": 26422.0,
+        "operating_cash_flow": 15365.0
+      }
+    ]
+  },
+  "MSFT": {
+    "type": "US",
+    "financials": [
+      {
+        "date": "2026-06-30",
+        "revenue": 90007.0,
+        "net_income": 35766.0,
+        "operating_cash_flow": 55441.0
+      },
+      {
+        "date": "2026-03-31",
+        "revenue": 82886.0,
+        "net_income": 31778.0,
+        "operating_cash_flow": 46679.0
+      },
+      {
+        "date": "2025-12-31",
+        "revenue": 81273.0,
+        "net_income": 38458.0,
+        "operating_cash_flow": 35758.0
+      },
+      {
+        "date": "2025-09-30",
+        "revenue": 77673.0,
+        "net_income": 27747.0,
+        "operating_cash_flow": 45057.0
+      }
+    ]
+  },
+  "TSLA": {
+    "type": "US",
+    "financials": [
+      {
+        "date": "2026-06-30",
+        "revenue": 28236.0,
+        "net_income": 1114.0,
+        "operating_cash_flow": 4697.0
+      },
+      {
+        "date": "2026-03-31",
+        "revenue": 22387.0,
+        "net_income": 477.0,
+        "operating_cash_flow": 3937.0
+      },
+      {
+        "date": "2025-12-31",
+        "revenue": 24901.0,
+        "net_income": 840.0,
+        "operating_cash_flow": 3813.0
+      },
+      {
+        "date": "2025-09-30",
+        "revenue": 28095.0,
+        "net_income": 1373.0,
+        "operating_cash_flow": 6238.0
+      }
+    ]
+  },
+  "GOOGL": {
+    "type": "US",
+    "financials": [
+      {
+        "date": "2026-06-30",
+        "revenue": 119796.0,
+        "net_income": 112193.0,
+        "operating_cash_flow": 39069.0
+      },
+      {
+        "date": "2026-03-31",
+        "revenue": 109896.0,
+        "net_income": 62578.0,
+        "operating_cash_flow": 45790.0
+      },
+      {
+        "date": "2025-12-31",
+        "revenue": 113829.0,
+        "net_income": 34455.0,
+        "operating_cash_flow": 52402.0
+      },
+      {
+        "date": "2025-09-30",
+        "revenue": 102346.0,
+        "net_income": 34979.0,
+        "operating_cash_flow": 48414.0
+      }
+    ]
+  },
+  "2330": {
+    "type": "TW",
+    "financials": []
+  },
+  "2454": {
+    "type": "TW",
+    "financials": []
+  },
+  "2317": {
+    "type": "TW",
+    "financials": []
+  },
+  "2382": {
+    "type": "TW",
+    "financials": []
   }
 }
