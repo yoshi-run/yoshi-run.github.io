@@ -1,63 +1,12 @@
 {
   "_config": {
     "watchlist": [
-      {
-        "name": "AAPL (蘋果)",
-        "symbol": "AAPL",
-        "type": "US"
-      },
-      {
-        "name": "NVDA (輝達)",
-        "symbol": "NVDA",
-        "type": "US"
-      },
-      {
-        "name": "MSFT (微軟)",
-        "symbol": "MSFT",
-        "type": "US"
-      },
-      {
-        "name": "2330 (台積電)",
-        "symbol": "2330.TW",
-        "type": "TW"
-      },
-      {
-        "name": "2454 (聯發科)",
-        "symbol": "2454.TW",
-        "type": "TW"
-      }
+      { "name": "AAPL (蘋果)", "symbol": "AAPL", "type": "US" },
+      { "name": "NVDA (輝達)", "symbol": "NVDA", "type": "US" },
+      { "name": "MSFT (微軟)", "symbol": "MSFT", "type": "US" },
+      { "name": "2330 (台積電)", "symbol": "2330.TW", "type": "TW" },
+      { "name": "2454 (聯發科)", "symbol": "2454.TW", "type": "TW" }
     ]
   },
-  "stocks": {
-    "AAPL (蘋果)": {
-      "symbol": "AAPL",
-      "type": "US",
-      "unit": "百萬美元",
-      "financials": []
-    },
-    "NVDA (輝達)": {
-      "symbol": "NVDA",
-      "type": "US",
-      "unit": "百萬美元",
-      "financials": []
-    },
-    "MSFT (微軟)": {
-      "symbol": "MSFT",
-      "type": "US",
-      "unit": "百萬美元",
-      "financials": []
-    },
-    "2330 (台積電)": {
-      "symbol": "2330.TW",
-      "type": "TW",
-      "unit": "億新台幣",
-      "financials": []
-    },
-    "2454 (聯發科)": {
-      "symbol": "2454.TW",
-      "type": "TW",
-      "unit": "億新台幣",
-      "financials": []
-    }
-  }
+  "stocks": {}
 }
