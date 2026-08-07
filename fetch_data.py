@@ -1,31 +1,18 @@
 import json
-import os
 import time
 import pandas as pd
 import yfinance as yf
 
-# 預設追蹤清單
-DEFAULT_STOCKS = [
+# 這裡就是唯一的官方追蹤清單！未來要加股票直接在這裡新增即可
+WATCHLIST = [
     {"name": "AAPL (蘋果)", "symbol": "AAPL", "type": "US"},
     {"name": "NVDA (輝達)", "symbol": "NVDA", "type": "US"},
     {"name": "MSFT (微軟)", "symbol": "MSFT", "type": "US"},
-    {"name": "TSLA (特斯拉)", "symbol": "TSLA", "type": "US"},  # 👈 新增美股範例
-    {"name": "AMZN (亞馬遜)", "symbol": "AMZN", "type": "US"},  # 👈 新增美股範例
+    {"name": "TSLA (特斯拉)", "symbol": "TSLA", "type": "US"},
+    {"name": "AMZN (亞馬遜)", "symbol": "AMZN", "type": "US"},
     {"name": "2330 (台積電)", "symbol": "2330.TW", "type": "TW"},
     {"name": "2454 (聯發科)", "symbol": "2454.TW", "type": "TW"},
 ]
-
-
-def load_stock_list():
-  if os.path.exists("stock_data.json"):
-    try:
-      with open("stock_data.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
-        if "_config" in data and "watchlist" in data["_config"]:
-          return data["_config"]["watchlist"]
-    except Exception as e:
-      print(f"讀取現有設定失敗: {e}")
-  return DEFAULT_STOCKS
 
 
 def fetch_financials(symbol, is_tw):
@@ -34,7 +21,6 @@ def fetch_financials(symbol, is_tw):
   financials = pd.DataFrame()
   cashflow = pd.DataFrame()
 
-  # 使用最穩定的 quarterly_financials / quarterly_cashflow
   for attempt in range(3):
     try:
       financials = stock.quarterly_financials
@@ -48,7 +34,6 @@ def fetch_financials(symbol, is_tw):
     print(f"⚠️ 無法取得 {symbol} 的財報數據")
     return []
 
-  # 取得可用的季度數據 (舊到新)
   cols = list(financials.columns)[::-1]
   data = []
 
@@ -81,7 +66,6 @@ def fetch_financials(symbol, is_tw):
     net_inc = get_val(financials, net_keys, date)
     op_cash = get_val(cashflow, cash_keys, date)
 
-    # 單位轉換：台股除以 1億，美股除以 100萬
     divisor = 1e8 if is_tw else 1e6
 
     data.append({
@@ -95,13 +79,12 @@ def fetch_financials(symbol, is_tw):
 
 
 def main():
-  watchlist = load_stock_list()
   output_data = {
-      "_config": {"watchlist": watchlist},
+      "_config": {"watchlist": WATCHLIST},
       "stocks": {},
   }
 
-  for item in watchlist:
+  for item in WATCHLIST:
     symbol = item["symbol"]
     name = item["name"]
     is_tw = item["type"] == "TW"
