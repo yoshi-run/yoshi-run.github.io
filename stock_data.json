@@ -156,12 +156,6 @@
       "unit": "百萬美元",
       "financials": [
         {
-          "date": "2024-12",
-          "revenue": 0.0,
-          "net_income": 0.0,
-          "operating_cash_flow": 0.0
-        },
-        {
           "date": "2025-03",
           "revenue": 0.0,
           "net_income": 0.0,
@@ -247,12 +241,6 @@
       "type": "TW",
       "unit": "億新台幣",
       "financials": [
-        {
-          "date": "2024-12",
-          "revenue": 0.0,
-          "net_income": 0.0,
-          "operating_cash_flow": 0.0
-        },
         {
           "date": "2025-03",
           "revenue": 0.0,
