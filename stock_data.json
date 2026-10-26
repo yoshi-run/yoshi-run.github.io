@@ -163,9 +163,9 @@
         },
         {
           "date": "2025-06",
-          "revenue": 22496.0,
-          "net_income": 1172.0,
-          "operating_cash_flow": 2540.0
+          "revenue": 0.0,
+          "net_income": 0.0,
+          "operating_cash_flow": 0.0
         },
         {
           "date": "2025-09",
@@ -190,6 +190,12 @@
           "revenue": 28236.0,
           "net_income": 1114.0,
           "operating_cash_flow": 4697.0
+        },
+        {
+          "date": "2026-09",
+          "revenue": 28046.0,
+          "net_income": 787.0,
+          "operating_cash_flow": 6263.0
         }
       ]
     },
@@ -249,14 +255,14 @@
         },
         {
           "date": "2025-06",
-          "revenue": 9337.92,
-          "net_income": 3982.73,
+          "revenue": 0.0,
+          "net_income": 0.0,
           "operating_cash_flow": 4970.64
         },
         {
           "date": "2025-09",
           "revenue": 9899.18,
-          "net_income": 4523.01,
+          "net_income": 4523.02,
           "operating_cash_flow": 4268.29
         },
         {
@@ -276,6 +282,12 @@
           "revenue": 12703.8,
           "net_income": 7065.62,
           "operating_cash_flow": 7833.65
+        },
+        {
+          "date": "2026-09",
+          "revenue": 14942.43,
+          "net_income": 7630.64,
+          "operating_cash_flow": 0.0
         }
       ]
     },
