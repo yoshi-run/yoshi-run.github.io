@@ -257,7 +257,7 @@
           "date": "2025-06",
           "revenue": 0.0,
           "net_income": 0.0,
-          "operating_cash_flow": 4970.64
+          "operating_cash_flow": 0.0
         },
         {
           "date": "2025-09",
@@ -287,7 +287,7 @@
           "date": "2026-09",
           "revenue": 14942.43,
           "net_income": 7630.64,
-          "operating_cash_flow": 0.0
+          "operating_cash_flow": 9197.76
         }
       ]
     },
