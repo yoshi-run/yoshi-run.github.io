@@ -205,12 +205,6 @@
       "unit": "百萬美元",
       "financials": [
         {
-          "date": "2025-03",
-          "revenue": 155667.0,
-          "net_income": 17127.0,
-          "operating_cash_flow": 17015.0
-        },
-        {
           "date": "2025-06",
           "revenue": 167702.0,
           "net_income": 18164.0,
@@ -242,9 +236,9 @@
         },
         {
           "date": "2026-09",
-          "revenue": 0.0,
-          "net_income": 0.0,
-          "operating_cash_flow": 0.0
+          "revenue": 201944.0,
+          "net_income": 20685.0,
+          "operating_cash_flow": 42422.0
         }
       ]
     },
@@ -268,7 +262,7 @@
         {
           "date": "2025-09",
           "revenue": 9899.18,
-          "net_income": 4523.02,
+          "net_income": 4523.01,
           "operating_cash_flow": 4268.29
         },
         {
