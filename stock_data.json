@@ -297,16 +297,10 @@
       "unit": "億新台幣",
       "financials": [
         {
-          "date": "2025-03",
+          "date": "2025-06",
           "revenue": 0.0,
           "net_income": 0.0,
           "operating_cash_flow": 0.0
-        },
-        {
-          "date": "2025-06",
-          "revenue": 1503.69,
-          "net_income": 278.48,
-          "operating_cash_flow": 456.69
         },
         {
           "date": "2025-09",
@@ -331,6 +325,12 @@
           "revenue": 1521.83,
           "net_income": 243.35,
           "operating_cash_flow": 242.51
+        },
+        {
+          "date": "2026-09",
+          "revenue": 1680.58,
+          "net_income": 278.82,
+          "operating_cash_flow": -42.56
         }
       ]
     }
