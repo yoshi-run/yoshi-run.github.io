@@ -116,6 +116,12 @@
           "revenue": 96221.0,
           "net_income": 59688.0,
           "operating_cash_flow": 24077.0
+        },
+        {
+          "date": "2026-10",
+          "revenue": 0.0,
+          "net_income": 0.0,
+          "operating_cash_flow": 0.0
         }
       ]
     },
